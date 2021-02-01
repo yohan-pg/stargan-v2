@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# custom ignores
+expr/
+data/
+settings.json
+
 # C extensions
 *.so
 
