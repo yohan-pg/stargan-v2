@@ -64,25 +64,13 @@ class ResBlk(nn.Module):
         return x / math.sqrt(2)  # unit variance
 
 from adaiw import BlockwiseAdaIN as AdaIN
-
-
-# class AdaIN(nn.Module):
-#     def __init__(self, style_dim, num_features):
-#         super().__init__()
-#         self.norm = nn.InstanceNorm2d(num_features, affine=False)
-#         self.fc = nn.Linear(style_dim, num_features*2)
-
-#     def forward(self, x, s):
-#         h = self.fc(s)
-#         h = h.view(h.size(0), h.size(1), 1, 1)
-#         gamma, beta = torch.chunk(h, chunks=2, dim=1)
-#         return (1 + gamma) * self.norm(x) + beta
-
 print(AdaIN.__class__.__name__)
+
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
-                 actv=nn.LeakyReLU(0.2), upsample=False):
+                 actv=nn.LeakyReLU(0.2), upsample=False, block_size=64):
         super().__init__()
+        self.block_size = block_size
         self.w_hpf = w_hpf
         self.actv = actv
         self.upsample = upsample
@@ -92,8 +80,8 @@ class AdainResBlk(nn.Module):
     def _build_weights(self, dim_in, dim_out, style_dim=64):
         self.conv1 = nn.Conv2d(dim_in, dim_out, 3, 1, 1)
         self.conv2 = nn.Conv2d(dim_out, dim_out, 3, 1, 1)
-        self.norm1 = AdaIN(style_dim, dim_in)
-        self.norm2 = AdaIN(style_dim, dim_out)
+        self.norm1 = AdaIN(style_dim, dim_in, block_size=self.block_size)
+        self.norm2 = AdaIN(style_dim, dim_out, block_size=self.block_size)
         if self.learned_sc:
             self.conv1x1 = nn.Conv2d(dim_in, dim_out, 1, 1, 0, bias=False)
 
@@ -135,7 +123,7 @@ class HighPass(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1):
+    def __init__(self, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1, block_size=64):
         super().__init__()
         dim_in = 2**14 // img_size
         self.img_size = img_size
@@ -157,7 +145,7 @@ class Generator(nn.Module):
                 ResBlk(dim_in, dim_out, normalize=True, downsample=True))
             self.decode.insert(
                 0, AdainResBlk(dim_out, dim_in, style_dim,
-                               w_hpf=w_hpf, upsample=True))  # stack-like
+                               w_hpf=w_hpf, upsample=True, block_size=block_size))  # stack-like
             dim_in = dim_out
 
         # bottleneck blocks
@@ -165,7 +153,7 @@ class Generator(nn.Module):
             self.encode.append(
                 ResBlk(dim_out, dim_out, normalize=True))
             self.decode.insert(
-                0, AdainResBlk(dim_out, dim_out, style_dim, w_hpf=w_hpf))
+                0, AdainResBlk(dim_out, dim_out, style_dim, w_hpf=w_hpf, block_size=block_size))
 
         if w_hpf > 0:
             device = torch.device(
