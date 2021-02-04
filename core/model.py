@@ -63,8 +63,25 @@ class ResBlk(nn.Module):
         x = self._shortcut(x) + self._residual(x)
         return x / math.sqrt(2)  # unit variance
 
-from adaiw import BlockwiseAdaIN as AdaIN
-print(AdaIN.__class__.__name__)
+if True:
+    from adaiw import BlockwiseAdaIN, Projection, AffineProjection
+    from dataclasses import dataclass
+
+    @dataclass(eq=False)
+    class AdaIN(BlockwiseAdaIN):
+        projection_type: Projection = AffineProjection
+else:
+    class AdaIN(nn.Module):
+        def __init__(self, style_dim, num_features):
+            super().__init__()
+            self.norm = nn.InstanceNorm2d(num_features, affine=False)
+            self.fc = nn.Linear(style_dim, num_features*2)
+
+        def forward(self, x, s):
+            h = self.fc(s)
+            h = h.view(h.size(0), h.size(1), 1, 1)
+            gamma, beta = torch.chunk(h, chunks=2, dim=1)
+            return (1 + gamma) * self.norm(x) + beta
 
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
@@ -82,6 +99,7 @@ class AdainResBlk(nn.Module):
         self.conv2 = nn.Conv2d(dim_out, dim_out, 3, 1, 1)
         self.norm1 = AdaIN(style_dim, dim_in, block_size=self.block_size)
         self.norm2 = AdaIN(style_dim, dim_out, block_size=self.block_size)
+        print(self.norm1)
         if self.learned_sc:
             self.conv1x1 = nn.Conv2d(dim_in, dim_out, 1, 1, 0, bias=False)
 
