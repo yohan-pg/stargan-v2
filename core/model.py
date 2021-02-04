@@ -125,6 +125,7 @@ class HighPass(nn.Module):
 class Generator(nn.Module):
     def __init__(self, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1, block_size=64):
         super().__init__()
+        print('block_size: ', block_size)
         dim_in = 2**14 // img_size
         self.img_size = img_size
         self.from_rgb = nn.Conv2d(3, dim_in, 3, 1, 1)
@@ -270,7 +271,7 @@ class Discriminator(nn.Module):
 
 
 def build_model(args):
-    generator = Generator(args.img_size, args.style_dim, w_hpf=args.w_hpf)
+    generator = Generator(args.img_size, args.style_dim, w_hpf=args.w_hpf, block_size=args.block_size)
     mapping_network = MappingNetwork(args.latent_dim, args.style_dim, args.num_domains)
     style_encoder = StyleEncoder(args.img_size, args.style_dim, args.num_domains)
     discriminator = Discriminator(args.img_size, args.num_domains)
