@@ -9,6 +9,7 @@
 
 cd $SCRATCH/stargan-v2
 module load python
+module load httpproxy
 source $HOME/stargan-v2-env/bin/activate
 
 LIST_BLOCK_SIZES=(1 2 4 8 16 32 64 128 256 512)
