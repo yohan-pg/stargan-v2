@@ -1,0 +1,27 @@
+Namespace(batch_size=8, beta1=0.0, beta2=0.99, block_size=8, checkpoint_dir='expr/block_size_8/checkpoints/afhq', ds_iter=100000, eval_dir='expr/block_size_8/eval/afhq', eval_every=50000, f_lr=1e-06, hidden_dim=512, img_size=64, inp_dir='assets/representative/custom/female', lambda_cyc=1.0, lambda_ds=2.0, lambda_reg=1.0, lambda_sty=1.0, latent_dim=16, lm_path='expr/block_size_8/checkpoints/celeba_lm_mean.npz', lr=0.0001, mode='train', num_domains=3, num_outs_per_domain=10, num_workers=4, out_dir='assets/representative/celeba_hq/src/female', print_every=100, randcrop_prob=0.5, ref_dir='assets/representative/celeba_hq/ref', result_dir='expr/block_size_8/results/afhq', resume_iter=0, sample_dir='expr/block_size_8/samples/afhq', sample_every=5000, save_every=50000, seed=777, src_dir='assets/representative/celeba_hq/src', style_dim=64, total_iters=100000, train_img_dir='data/afhq/train', val_batch_size=32, val_img_dir='data/afhq/val', w_hpf=0.0, weight_decay=0.0001, wing_path='expr/block_size_8/checkpoints/wing.ckpt')
+block_size:  8
+num blocks normalizer: 64
+num blocks normalizer: 32
+AdaIN(style_size=64, num_features=512, projection_type=<class 'adaiw.projection.AffineProjection'>, normalizer_type=<class 'adaiw.normalizer.BlockwiseWhitening'>, shift_mean=False, last_injected_stat=None, last_extracted_stat=None, last_projected_style=None, block_size=8)
+num blocks normalizer: 64
+num blocks normalizer: 64
+AdaIN(style_size=64, num_features=512, projection_type=<class 'adaiw.projection.AffineProjection'>, normalizer_type=<class 'adaiw.normalizer.BlockwiseWhitening'>, shift_mean=False, last_injected_stat=None, last_extracted_stat=None, last_projected_style=None, block_size=8)
+num blocks normalizer: 64
+num blocks normalizer: 64
+AdaIN(style_size=64, num_features=512, projection_type=<class 'adaiw.projection.AffineProjection'>, normalizer_type=<class 'adaiw.normalizer.BlockwiseWhitening'>, shift_mean=False, last_injected_stat=None, last_extracted_stat=None, last_projected_style=None, block_size=8)
+num blocks normalizer: 64
+num blocks normalizer: 64
+AdaIN(style_size=64, num_features=512, projection_type=<class 'adaiw.projection.AffineProjection'>, normalizer_type=<class 'adaiw.normalizer.BlockwiseWhitening'>, shift_mean=False, last_injected_stat=None, last_extracted_stat=None, last_projected_style=None, block_size=8)
+Number of parameters of generator: 34382083
+Number of parameters of mapping_network: 3259072
+Number of parameters of style_encoder: 20360640
+Number of parameters of discriminator: 20263683
+Initializing generator...
+Initializing mapping_network...
+Initializing style_encoder...
+Initializing discriminator...
+Preparing DataLoader to fetch source images during the training phase...
+Preparing DataLoader to fetch reference images during the training phase...
+Preparing DataLoader for the generation phase...
+Start training...
+slurmstepd: error: *** JOB 16109531 ON blg5407 CANCELLED AT 2021-02-10T16:13:05 ***
