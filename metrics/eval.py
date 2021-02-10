@@ -40,17 +40,17 @@ def calculate_metrics(nets, args, step, mode):
         if mode == 'reference':
             path_ref = os.path.join(args.val_img_dir, trg_domain)
             loader_ref = get_eval_loader(root=path_ref,
-                                         img_size=args.img_size,
-                                         batch_size=args.val_batch_size,
-                                         imagenet_normalize=False,
-                                         drop_last=True)
+                                        img_size=args.img_size,
+                                        batch_size=args.val_batch_size,
+                                        imagenet_normalize=False,
+                                        drop_last=True)
 
         for src_idx, src_domain in enumerate(src_domains):
             path_src = os.path.join(args.val_img_dir, src_domain)
             loader_src = get_eval_loader(root=path_src,
-                                         img_size=args.img_size,
-                                         batch_size=args.val_batch_size,
-                                         imagenet_normalize=False)
+                                        img_size=args.img_size,
+                                        batch_size=args.val_batch_size,
+                                        imagenet_normalize=False)
 
             task = '%s2%s' % (src_domain, trg_domain)
             path_fake = os.path.join(args.eval_dir, task)
@@ -114,7 +114,7 @@ def calculate_metrics(nets, args, step, mode):
     # report LPIPS values
     filename = os.path.join(args.eval_dir, 'LPIPS_%.5i_%s.json' % (step, mode))
     utils.save_json(lpips_dict, filename)
-
+    
     # calculate and report fid values
     calculate_fid_for_all_tasks(args, domains, step=step, mode=mode)
 

@@ -7,10 +7,17 @@
 #SBATCH --time=3-00:00           # time (DD-HH:MM)
 #SBATCH --array=0-9 #included
 
+if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
+    SLURM_ARRAY_TASK_ID=1
+fi
+
 cd $SCRATCH/stargan-v2
 module load python
-module load httpproxy
 source $HOME/stargan-v2-env/bin/activate
+
+# wget https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
+# wget https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth
+# /home/yohanpg/.cache/torch/hub/checkpoints
 
 LIST_BLOCK_SIZES=(1 2 4 8 16 32 64 128 256 512)
 
@@ -20,11 +27,14 @@ python main.py --mode train --num_domains 3 --w_hpf 0 \
                --lambda_reg 1 --lambda_sty 1 --lambda_ds 2 --lambda_cyc 1 \
                --train_img_dir data/afhq/train \
                --val_img_dir data/afhq/val \
-               --checkpoint_dir expr/"$EXPR"/checkpoints/afhq \
-               --result_dir expr/"$EXPR"/results/afhq \
-               --sample_dir expr/"$EXPR"/samples/afhq \
-               --eval_dir expr/"$EXPR"/eval/afhq \
-               --wing_path expr/"$EXPR"/checkpoints/wing.ckpt \
-               --lm_path expr/"$EXPR"/checkpoints/celeba_lm_mean.npz \
                --img_size 64 \
+               --total_iters 1 \
+               --eval_every 1 \
                --block_size "${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}"
+
+#    --checkpoint_dir expr/"$EXPR"/checkpoints/afhq \
+#    --result_dir expr/"$EXPR"/results/afhq \
+#    --sample_dir expr/"$EXPR"/samples/afhq \
+#    --eval_dir expr/"$EXPR"/eval/afhq \
+#    --wing_path expr/"$EXPR"/checkpoints/wing.ckpt \
+#    --lm_path expr/"$EXPR"/checkpoints/celeba_lm_mean.npz \
