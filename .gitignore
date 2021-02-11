@@ -5,6 +5,7 @@ __pycache__/
 
 # custom ignores
 expr/
+/_expr*/
 data/
 settings.json
 
