@@ -63,11 +63,11 @@ class ResBlk(nn.Module):
         x = self._shortcut(x) + self._residual(x)
         return x / math.sqrt(2)  # unit variance
 
-if False:
+if True:
     from adaiw import BlockwiseAdaIN as AdaIN
 else:
     class AdaIN(nn.Module):
-        def __init__(self, style_dim, num_features):
+        def __init__(self, style_dim, num_features, _):
             super().__init__()
             self.norm = nn.InstanceNorm2d(num_features, affine=False)
             self.fc = nn.Linear(style_dim, num_features*2)
