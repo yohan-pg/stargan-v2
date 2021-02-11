@@ -181,5 +181,7 @@ if __name__ == '__main__':
     parser.add_argument('--save_every', type=int, default=50000)
     parser.add_argument('--eval_every', type=int, default=50000)
 
+    parser.add_argument('--block_size', type=int, default=64)
+
     args = parser.parse_args()
     main(args)

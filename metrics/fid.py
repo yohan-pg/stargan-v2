@@ -54,7 +54,11 @@ class InceptionV3(nn.Module):
 
 
 def frechet_distance(mu, cov, mu2, cov2):
-    cc, _ = linalg.sqrtm(np.dot(cov, cov2), disp=False)
+    if False:
+        cc, _ = linalg.sqrtm(np.dot(cov, cov2), disp=False)
+    else:
+        U, S, V = torch.svd(torch.tensor(np.dot(cov, cov2)))
+        cc = (U @ torch.diag_embed(torch.sqrt(S)) @ V.t()).numpy()
     dist = np.sum((mu -mu2)**2) + np.trace(cov + cov2 - 2*cc)
     return np.real(dist)
 
@@ -65,7 +69,6 @@ def calculate_fid_given_paths(paths, img_size=256, batch_size=50):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     inception = InceptionV3().eval().to(device)
     loaders = [get_eval_loader(path, img_size, batch_size) for path in paths]
-
     mu, cov = [], []
     for loader in loaders:
         actvs = []
