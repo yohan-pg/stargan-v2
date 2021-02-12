@@ -10,12 +10,10 @@
 echo "👉 Downloading weights"
 bash download_missing_weights.sh
 
-
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
 module load python
 source $HOME/stargan-v2-env/bin/activate
-
 
 echo "👉 Starting training"
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then

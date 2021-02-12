@@ -1,7 +1,10 @@
 #! /bin/bash
 
+echo "👉 Activating environment"
 source /root/miniconda3/bin/activate test
 export CUDA_VISIBLE_DEVICES=1
+
+echo "👉 Starting training"
 python main.py --mode train --num_domains 3 --w_hpf 0 \
                --lambda_reg 1 --lambda_sty 1 --lambda_ds 2 --lambda_cyc 1 \
                --train_img_dir data/afhq/train \
