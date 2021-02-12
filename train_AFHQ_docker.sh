@@ -8,4 +8,3 @@ python main.py --mode train --num_domains 3 --w_hpf 0 \
                --img_size 2048 \
                --eval_every 5000 \
                --val_img_dir data/afhq/val 
-#! img size and eval every
