@@ -17,8 +17,10 @@ source $HOME/stargan-v2-env/bin/activate
 echo "👉 Starting training"
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
     export SLURM_ARRAY_TASK_ID=1
-    export MKL_NUM_THREADS=4 # *** important else scipy `sqrtm` takes ∞ time
 fi
+
+export MKL_NUM_THREADS=1 # *** important else scipy `sqrtm` takes ∞ time
+
 LIST_BLOCK_SIZES=(1 2 4 8 16 32 64 128 256)
 EXPR="block_size_${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}"
 python main.py --mode train --num_domains 3 --w_hpf 0 \
