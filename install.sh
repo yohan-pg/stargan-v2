@@ -11,9 +11,9 @@ set -e
 
 echo "👉 Creating environment"
 if [ -z "$IS_SLURM" ]; then
-    echo pip3 install virtualenv
+    pip3 install virtualenv
 else 
-    echo bash load_slurm_modules.sh
+    bash load_slurm_modules.sh
 fi
 virtualenv --no-download ~/stargan-v2-env
 source $HOME/stargan-v2-env/bin/activate
