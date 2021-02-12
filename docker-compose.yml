@@ -1,8 +1,17 @@
+version: "3.6"
 services:
   stargan:
+    # TODO autoactivate
     image: stargan:base
     build: .
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+              - gpu
     volumes:
       - ".:/stargan-v2"
       - "../adaiw:/adaiw"
       - /.cache/torch/hub/checkpoints:/.cache/torch/hub/checkpoints
+    shm_size: 8gb

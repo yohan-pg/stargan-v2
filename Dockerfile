@@ -1,7 +1,11 @@
 FROM nvidia/cuda:10.1-base
 RUN apt-get update 
-RUN apt-get install unzip
+RUN yes | apt-get install unzip
 RUN yes | apt-get install wget
 RUN yes | apt-get install python3-pip
-COPY ./install.sh /stargan-v2/install.sh
-RUN cd /stargan-v2 && ./install.sh
+RUN yes | apt-get install nano
+RUN yes | apt-get install libgl1-mesa-glx
+WORKDIR /stargan-v2
+COPY ./install.sh ./install.sh
+RUN ./install.sh
+RUN echo "source $HOME/stargan-v2-env/bin/activate" > "$HOME/.bashrc"
