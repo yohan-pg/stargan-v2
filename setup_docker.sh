@@ -15,3 +15,6 @@ pip install pillow==7.0.0 scipy==1.2.1 tqdm==4.43.0 munch==2.5.0
 
 echo "👉 Downloading datasets"
 bash download_missing_datasets.sh
+
+echo "👉 Downloading weights"
+bash download_missing_weights.sh

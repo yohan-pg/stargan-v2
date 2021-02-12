@@ -1,6 +1,6 @@
 CHECKPOINTS=$HOME/.cache/torch/hub/checkpoints
 
-INCEPTION_WEIGHTS=$CHECKPOINTS/pt_inception-2015-12-05-6726825d.pth
+INCEPTION_WEIGHTS=$CHECKPOINTS/inception_v3_google-1a9a5a14.pth
 if [ -f "$INCEPTION_WEIGHTS" ]; then
     echo "  👍 $INCEPTION_WEIGHTS already exists."
 else 
