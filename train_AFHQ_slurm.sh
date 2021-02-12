@@ -7,9 +7,11 @@
 #SBATCH --time=3-00:00           # time (DD-HH:MM)
 #SBATCH --array=0-8 #included
 
+set -e
+
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
-module load python
+bash load_slurm_modules.sh
 source $HOME/stargan-v2-env/bin/activate
 
 echo "👉 Starting training"
