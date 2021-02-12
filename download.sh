@@ -50,5 +50,4 @@ elif  [ $FILE == "afhq-dataset" ]; then
 else
     echo "Available arguments are pretrained-network-celeba-hq, pretrained-network-afhq, celeba-hq-dataset, and afhq-dataset."
     exit 1
-
 fi
