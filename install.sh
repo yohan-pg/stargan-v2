@@ -1,5 +1,10 @@
 #! /bin/bash
 
+if [ -d $HOME/stargan-v2-env ]; then
+    echo "❌ Environment already exists! ($HOME/stargan-v2-env)"
+    exit 1
+fi
+
 IS_SLURM=$(command -v sbatch)
 
 set -e
@@ -8,7 +13,7 @@ echo "👉 Creating environment"
 if [ ! -z "$IS_SLURM" ]; then
     echo pip3 install virtualenv
 else 
-    ./load_slurm_modules.sh
+    bash load_slurm_modules.sh
 fi
 virtualenv --no-download ~/stargan-v2-env
 source $HOME/stargan-v2-env/bin/activate
