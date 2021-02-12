@@ -11,7 +11,7 @@ set -e
 
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
-bash load_slurm_modules.sh
+source load_slurm_modules.sh
 source $HOME/stargan-v2-env/bin/activate
 
 echo "👉 Starting training"
