@@ -11,12 +11,13 @@ set -e
 
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
-bash load_slurm_modules.sh
+source load_slurm_modules.sh
 source $HOME/stargan-v2-env/bin/activate
 
 echo "👉 Starting training"
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
-    SLURM_ARRAY_TASK_ID=1
+    export SLURM_ARRAY_TASK_ID=1
+    export MKL_NUM_THREADS=4 # *** important else scipy `sqrtm` takes ∞ time
 fi
 LIST_BLOCK_SIZES=(1 2 4 8 16 32 64 128 256)
 EXPR="block_size_${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}"
@@ -31,4 +32,4 @@ python main.py --mode train --num_domains 3 --w_hpf 0 \
                --eval_dir expr/"$EXPR"/eval/afhq \
                --wing_path expr/"$EXPR"/checkpoints/wing.ckpt \
                --lm_path expr/"$EXPR"/checkpoints/celeba_lm_mean.npz \
-               --block_size "${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}"
+               --block_size "${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}" "$@"
