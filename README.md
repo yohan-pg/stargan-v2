@@ -1,3 +1,14 @@
+# Start a training on SLURM
+```
+bash setup_slurm.sh
+bash train_AFHQ_slurm.sh
+```
+
+# Start a training on Docker
+```
+bash setup_docker.sh
+docker-compose run stargan bash train_AFHQ_docker.sh
+```
 
 ## StarGAN v2 - Official PyTorch Implementation
 
