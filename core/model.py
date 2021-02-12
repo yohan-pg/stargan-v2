@@ -78,8 +78,6 @@ else:
             gamma, beta = torch.chunk(h, chunks=2, dim=1)
             return (1 + gamma) * self.norm(x) + beta
 
-print(AdaIN.__class__.__name__)
-
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
                  actv=nn.LeakyReLU(0.2), upsample=False, block_size=64):
