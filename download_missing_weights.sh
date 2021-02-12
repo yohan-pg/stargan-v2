@@ -1,3 +1,7 @@
+#! /bin/bash
+
+echo "👉 Downloading weights"
+
 CHECKPOINTS=$HOME/.cache/torch/hub/checkpoints
 
 INCEPTION_WEIGHTS=$CHECKPOINTS/inception_v3_google-1a9a5a14.pth

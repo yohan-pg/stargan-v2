@@ -1,3 +1,7 @@
+#! /bin/bash
+
+echo "👉 Downloading datasets"
+
 if [ ! -d "data/afhq" ]; then 
     bash download.sh afhq-dataset
 else

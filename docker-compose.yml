@@ -1,0 +1,8 @@
+services:
+  stargan:
+    image: stargan:base
+    build: .
+    volumes:
+      - ".:/stargan-v2"
+      - "../adaiw:/adaiw"
+      - /.cache/torch/hub/checkpoints:/.cache/torch/hub/checkpoints
