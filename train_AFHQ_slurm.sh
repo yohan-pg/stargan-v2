@@ -7,6 +7,8 @@
 #SBATCH --time=3-00:00           # time (DD-HH:MM)
 #SBATCH --array=0-8 #included
 
+bash download_missing_weights.sh
+
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
     SLURM_ARRAY_TASK_ID=1
 fi
@@ -14,10 +16,6 @@ fi
 cd $SCRATCH/stargan-v2
 module load python
 source $HOME/stargan-v2-env/bin/activate
-
-# wget https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth
-# wget https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth
-# /home/yohanpg/.cache/torch/hub/checkpoints
 
 LIST_BLOCK_SIZES=(1 2 4 8 16 32 64 128 256)
 
@@ -35,6 +33,3 @@ python main.py --mode train --num_domains 3 --w_hpf 0 \
                --wing_path expr/"$EXPR"/checkpoints/wing.ckpt \
                --lm_path expr/"$EXPR"/checkpoints/celeba_lm_mean.npz \
                --block_size "${LIST_BLOCK_SIZES[$SLURM_ARRAY_TASK_ID]}"
-
-# --total_iters 1 \
-# --eval_every 1 \
