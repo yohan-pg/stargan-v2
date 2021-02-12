@@ -54,11 +54,7 @@ class InceptionV3(nn.Module):
 
 
 def frechet_distance(mu, cov, mu2, cov2):
-    if 'SLURM_JOB_ID' not in os.environ:
-        cc, _ = linalg.sqrtm(np.dot(cov, cov2), disp=False)
-    else:
-        U, S, V = torch.svd(torch.tensor(np.dot(cov, cov2)))
-        cc = (U @ torch.diag_embed(torch.sqrt(S)) @ V.t()).numpy()
+    cc, _ = linalg.sqrtm(np.dot(cov, cov2), disp=False)
     dist = np.sum((mu -mu2)**2) + np.trace(cov + cov2 - 2*cc)
     return np.real(dist)
 

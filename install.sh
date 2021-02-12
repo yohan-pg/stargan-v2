@@ -24,6 +24,6 @@ pip3 install opencv-python
 pip3 install ffmpeg-python 
 pip3 install scikit-image
 pip3 install pillow==7.0.0 
-pip3 install scipy==1.2.1 
+pip3 install scipy==1.6.0
 pip3 install tqdm==4.43.0 
 pip3 install munch==2.5.0
