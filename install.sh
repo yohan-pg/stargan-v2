@@ -27,3 +27,5 @@ pip3 install pillow==7.0.0
 pip3 install scipy==1.6.0
 pip3 install tqdm==4.43.0 
 pip3 install munch==2.5.0
+pip3 install pandas
+pip3 install tabluate
