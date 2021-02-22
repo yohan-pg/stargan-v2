@@ -74,7 +74,7 @@ if ARGS.method == 'baseline':
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
     assert ARGS.block_size == parser.get_default('block_size')
-    
+
     class AdaIN(nn.Module):
         def __init__(self, style_dim, num_features):
             super().__init__()
@@ -124,7 +124,7 @@ elif ARGS.method == 'whitening':
                 center_color_at_identity = ARGS.center_color_at_identity,
                 block_size = ARGS.block_size,
                 alpha_white = ARGS.alpha_white, 
-                alpha_color = ARGS.alpha_color
+                alpha_color = ARGS.alpha_color,
                 **kwargs
             )
             print("=================")
