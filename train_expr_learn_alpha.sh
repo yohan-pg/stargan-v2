@@ -14,4 +14,5 @@ export EXPR="learn_alpha_$CHOICE"
 
 source train_expr.sh --learn_alpha "$CHOICE" \
       --alpha_white 0.5 \
-      --alpha_color 0.5
+      --alpha_color 0.5 \
+      "$@"

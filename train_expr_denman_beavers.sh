@@ -12,4 +12,4 @@ CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="use_denman_beavers_$CHOICE"
 
-source train_expr.sh --use_denman_beavers "$CHOICE"
+source train_expr.sh --use_denman_beavers "$CHOICE" "$@"

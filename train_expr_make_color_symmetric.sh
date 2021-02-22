@@ -12,4 +12,4 @@ CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="make_color_symmetric_$CHOICE"
 
-source train_expr.sh --make_color_symmetric "$CHOICE"
+source train_expr.sh --make_color_symmetric "$CHOICE" "$@"

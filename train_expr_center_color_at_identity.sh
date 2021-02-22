@@ -12,4 +12,4 @@ CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="center_color_at_identity_$CHOICE"
 
-source train_expr.sh --center_color_at_identity "$CHOICE"
+source train_expr.sh --center_color_at_identity "$CHOICE" "$@"

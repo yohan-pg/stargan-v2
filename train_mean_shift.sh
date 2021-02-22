@@ -12,4 +12,4 @@ CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="use_mean_shift_$CHOICE"
 
-source train_expr.sh --use_mean_shift "$CHOICE"
+source train_expr.sh --use_mean_shift "$CHOICE" "$@"

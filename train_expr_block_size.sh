@@ -12,4 +12,4 @@ CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="block_size_$CHOICE"
 
-source train_expr.sh --block_size "$CHOICE"
+source train_expr.sh --block_size "$CHOICE" "$@"
