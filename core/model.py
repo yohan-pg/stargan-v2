@@ -67,6 +67,14 @@ class ResBlk(nn.Module):
 from core.args import ARGS, parser
 
 if ARGS.method == 'baseline':
+    assert ARGS.use_mlp == parser.get_default('use_mlp')
+    assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
+    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
+    assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
+    assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
+    assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
+    assert ARGS.block_size == parser.get_default('block_size')
+    
     class AdaIN(nn.Module):
         def __init__(self, style_dim, num_features):
             super().__init__()
@@ -85,10 +93,9 @@ if ARGS.method == 'baseline':
             return (1 + gamma) * self.norm(x) + beta
 elif ARGS.method == 'std':
     import adaiw
-    assert ARGS.use_mlp == False
-    assert ARGS.use_mean_shift == True
-    assert ARGS.learn_alpha == False
-
+    assert ARGS.use_mlp == parser.get_default('use_mlp')
+    assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
+    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
     assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
