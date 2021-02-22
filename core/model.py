@@ -63,14 +63,19 @@ class ResBlk(nn.Module):
         x = self._shortcut(x) + self._residual(x)
         return x / math.sqrt(2)  # unit variance
 
-if True:
-    from adaiw import BlockwiseAdaIN as AdaIN
-else:
+
+from core.args import ARGS, parser
+
+if ARGS.method == 'baseline':
     class AdaIN(nn.Module):
         def __init__(self, style_dim, num_features):
             super().__init__()
             self.norm = nn.InstanceNorm2d(num_features, affine=False)
             self.fc = nn.Linear(style_dim, num_features*2)
+
+            print("=================")
+            print("Baseline")
+            print("=================")
 
         def forward(self, x, s):
             h = self.fc(s)
@@ -78,6 +83,46 @@ else:
             gamma, beta = torch.chunk(h, chunks=2, dim=1)
 
             return (1 + gamma) * self.norm(x) + beta
+elif ARGS.method == 'std':
+    import adaiw
+    assert ARGS.use_mlp = False
+    assert ARGS.use_mean_shift = True
+    assert ARGS.learn_alpha = False
+
+    assert ARGS.use_denman_beavers = parser.get_default('use_denman_beavers')
+    assert ARGS.make_color_symmetric = parser.get_default('make_color_symmetric')
+    assert ARGS.center_color_at_identity = parser.get_default('center_color_at_identity')
+    assert ARGS.block_size = parser.get_default('block_size')
+    
+    class AdaIN(adaiw.AdaIN):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            print("=================")
+            print("Std AdaIN")
+            print(self)
+            print(self.normalizer)
+            print("=================")
+
+elif ARGS.method == 'whitening':
+    import adaiw
+    class AdaIN(adaiw.BlockwiseAdaIN):
+        def __init__(self, *args, **kwargs):
+            super().__init__(
+                *args, 
+                projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
+                normalizer_type = adaiw.BlockwiseDBWhitening if ARGS.use_denman_beavers else adaiw.BlockwiseWhitening,
+                learn_alpha = ARGS.learn_alpha,
+                shift_mean = ARGS.use_mean_shift,
+                make_color_symmetric = ARGS.make_color_symmetric,
+                center_color_at_identity = ARGS.center_color_at_identity,
+                block_size = ARGS.block_size,
+                **kwargs
+            )
+            print("=================")
+            print("Blockwise AdaIN")
+            print(self)
+            print(self.normalizer)
+            print("=================")
 
 
 class AdainResBlk(nn.Module):

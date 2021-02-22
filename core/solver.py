@@ -176,21 +176,22 @@ class Solver(nn.Module):
                     alphas_list.append([('norm_1_white', module.norm1.alpha_white, 'norm_1_color', module.norm1.alpha_color),
                                         ('norm_2_white', module.norm2.alpha_white, 'norm_2_color', module.norm2.alpha_color)])
                 
-                txt_f = os.path.join(args.sample_dir, "alphas.txt")
+                txt_f = os.path.join(args.notes_path, "alphas.txt")
                 with open(txt_f, "a+") as f:
                     f.write("{} iterations: \n".format(i+1))
                     for item in alphas_list:
                         f.write("{}\n".format(item))
 
             if (i+1) % args.print_std == 0:
-                with open(os.path.join(args.sample_dir, "std.txt"), "a+") as f:
-                    stds = [
-                        self.std_b4_norm_1,
-                        self.std_b4_norm_2,
-                        self.std_b4_join,
-                        self.std_b4_output
-                    ]
-                    print(i, stds)
+                with open(os.path.join(args.notes_path, "std.txt"), "a+") as f:
+                    f.write("{} iterations: \n".format(i+1))
+                    for j, module in enumerate(self.nets.generator.decode):
+                        print([
+                            module.std_b4_norm_1.item(),
+                            module.std_b4_norm_2.item(),
+                            module.std_b4_join.item(),
+                            module.std_b4_output.item()
+                        ], file=f)
 
     @torch.no_grad()
     def sample(self, loaders):

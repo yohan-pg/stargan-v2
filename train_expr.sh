@@ -1,12 +1,6 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --account=def-jlalonde
-#SBATCH --gres=gpu:v100l:1             # Number of GPU(s) per node
-#SBATCH --cpus-per-task=8          # CPU cores/threads
-#SBATCH --mem=32000M            # memory per node
-#SBATCH --time=0-24:00           # time (DD-HH:MM)
 
-set -e
+echo "🚀 $EXPR"
 
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
@@ -15,14 +9,16 @@ source $HOME/stargan-v2-env/bin/activate
 
 echo "👉 Starting training"
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
-    export SLURM_ARRAY_TASK_ID=0
+    echo "Please supply an array task ID"
+    exit 1 
+fi
+if [ -z "$EXPR" ]; then
+    echo "Please supply an experiment name"
+    exit 1 
 fi
 
 export MKL_NUM_THREADS=1 # *** important else scipy `sqrtm` takes ∞ time
 
-ALPHA_WHITE=(1.0)
-ALPHA_COLOR=(1.0)
-EXPR="tanh_DB_${ALPHA_WHITE[$SLURM_ARRAY_TASK_ID]}_${ALPHA_COLOR[$SLURM_ARRAY_TASK_ID]}"
 python main.py --mode train --num_domains 3 --w_hpf 0 \
                --lambda_reg 1 --lambda_sty 1 --lambda_ds 2 --lambda_cyc 1 \
                --train_img_dir data/afhq/train \

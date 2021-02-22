@@ -97,12 +97,20 @@ parser.add_argument('--sample_every', type=int, default=5000)
 parser.add_argument('--save_every', type=int, default=50000)
 parser.add_argument('--eval_every', type=int, default=50000)
 
-parser.add_argument('--block_size', type=int, default=64)
-
 parser.add_argument('--print_learned', type=int, default=1000)
 parser.add_argument('--print_std', type=int, default=100)
 parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
-parser.add_argument('--alpha_path', type=str, default='expr/')
+parser.add_argument('--notes_path', type=str, default='expr/')
+
+# Vanilla
+parser.add_argument('--method', type=bool, default='whitening', choices=['whitening', 'std', 'baseline'])
+parser.add_argument('--use_mlp', type=bool, default=True)
+parser.add_argument('--learn_alpha', type=bool, default=False)
+parser.add_argument('--use_denman_beavers', type=bool, default=False)
+parser.add_argument('--use_mean_shift', type=bool, default=False)
+parser.add_argument('--make_color_symmetric', type=bool, default=True)
+parser.add_argument('--center_color_at_identity', type=bool, default=False)
+parser.add_argument('--block_size', type=int, default=64)
 
 ARGS = parser.parse_args()
