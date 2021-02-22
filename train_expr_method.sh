@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=8          # CPU cores/threads
 #SBATCH --mem=32000M            # memory per node
 #SBATCH --time=4-00:00           # time (DD-HH:MM)
-#SBATCH --array=0-7 #included
+#SBATCH --array=0-2 #included
 
 OPTIONS=(std baseline whitening)
 CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
