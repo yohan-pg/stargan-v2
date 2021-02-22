@@ -76,7 +76,9 @@ else:
             h = self.fc(s)
             h = h.view(h.size(0), h.size(1), 1, 1)
             gamma, beta = torch.chunk(h, chunks=2, dim=1)
+
             return (1 + gamma) * self.norm(x) + beta
+
 
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
@@ -92,6 +94,11 @@ class AdainResBlk(nn.Module):
         self.upsample = upsample
         self.learned_sc = dim_in != dim_out
         self._build_weights(dim_in, dim_out, style_dim)
+
+        self.std_b4_norm_1 = None
+        self.std_b4_norm_2 = None
+        self.std_b4_join = None
+        self.std_b4_output = None
 
     def _build_weights(self, dim_in, dim_out, style_dim=64):
         self.conv1 = nn.Conv2d(dim_in, dim_out, 3, 1, 1)
@@ -110,20 +117,24 @@ class AdainResBlk(nn.Module):
         return x
 
     def _residual(self, x, s):
+        self.std_b4_norm_1 = x.std()
         x = self.norm1(x, s)
         x = self.actv(x)
         if self.upsample:
             x = F.interpolate(x, scale_factor=2, mode='nearest')
         x = self.conv1(x)
+        self.std_b4_norm_2 = x.std()
         x = self.norm2(x, s)
         x = self.actv(x)
         x = self.conv2(x)
+        self.std_b4_join = x.std()
         return x
 
     def forward(self, x, s):
         out = self._residual(x, s)
         if self.w_hpf == 0:
             out = (out + self._shortcut(x)) / math.sqrt(2)
+        self.std_b4_output = out.std()
         return out
 
 

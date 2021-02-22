@@ -182,6 +182,16 @@ class Solver(nn.Module):
                     for item in alphas_list:
                         f.write("{}\n".format(item))
 
+            if (i+1) % args.print_std == 0:
+                with open(os.path.join(args.sample_dir, "std.txt"), "a+") as f:
+                    stds = [
+                        self.std_b4_norm_1,
+                        self.std_b4_norm_2,
+                        self.std_b4_join,
+                        self.std_b4_output
+                    ]
+                    print(i, stds)
+
     @torch.no_grad()
     def sample(self, loaders):
         args = self.args
