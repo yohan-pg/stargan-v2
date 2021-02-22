@@ -102,8 +102,8 @@ elif ARGS.method == 'std':
     assert ARGS.block_size == parser.get_default('block_size')
     
     class AdaIN(adaiw.AdaIN):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+        def __init__(self, *args):
+            super().__init__(*args)
             print("=================")
             print("Std AdaIN")
             print(self)
@@ -113,7 +113,7 @@ elif ARGS.method == 'std':
 elif ARGS.method == 'whitening':
     import adaiw
     class AdaIN(adaiw.BlockwiseAdaIN):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args):
             super().__init__(
                 *args, 
                 projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
@@ -124,8 +124,7 @@ elif ARGS.method == 'whitening':
                 center_color_at_identity = ARGS.center_color_at_identity,
                 block_size = ARGS.block_size,
                 alpha_white = ARGS.alpha_white, 
-                alpha_color = ARGS.alpha_color,
-                **kwargs
+                alpha_color = ARGS.alpha_color
             )
             print("=================")
             print("Blockwise AdaIN")

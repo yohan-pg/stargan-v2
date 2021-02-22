@@ -103,14 +103,27 @@ parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
 
+
+def parse_bool(x):
+    assert isinstance(x, str)
+    if x == "True":
+        return True
+    elif x == "False":
+        return False
+    else: 
+        assert False, "Arg must be 'True' or 'False'"
+
 # Vanilla
 parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline'])
-parser.add_argument('--use_mlp', type=bool, default=True)
-parser.add_argument('--learn_alpha', type=bool, default=False)
-parser.add_argument('--use_denman_beavers', type=bool, default=False)
-parser.add_argument('--use_mean_shift', type=bool, default=False)
-parser.add_argument('--make_color_symmetric', type=bool, default=True)
-parser.add_argument('--center_color_at_identity', type=bool, default=False)
+parser.add_argument('--use_mlp', type=parse_bool, default=True)
+parser.add_argument('--learn_alpha', type=parse_bool, default=False)
+parser.add_argument('--use_denman_beavers', type=parse_bool, default=False)
+parser.add_argument('--use_mean_shift', type=parse_bool, default=False)
+parser.add_argument('--make_color_symmetric', type=parse_bool, default=True)
+parser.add_argument('--center_color_at_identity', type=parse_bool, default=False)
 parser.add_argument('--block_size', type=int, default=64)
 
+import sys 
 ARGS = parser.parse_args()
+print(sys.argv)
+print(ARGS)

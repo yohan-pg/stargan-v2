@@ -19,6 +19,8 @@ fi
 
 export MKL_NUM_THREADS=1 # *** important else scipy `sqrtm` takes ∞ time
 
+echo "Custom args: $@"
+
 python main.py --mode train --num_domains 3 --w_hpf 0 \
                --lambda_reg 1 --lambda_sty 1 --lambda_ds 2 --lambda_cyc 1 \
                --train_img_dir data/afhq/train \
