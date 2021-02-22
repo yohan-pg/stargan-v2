@@ -22,11 +22,12 @@ from core.wing import FAN
 
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
-                 normalize=False, downsample=False):
+                 normalize=False, downsample=False, upsample=False):
         super().__init__()
         self.actv = actv
         self.normalize = normalize
         self.downsample = downsample
+        self.upsample = upsample
         self.learned_sc = dim_in != dim_out
         self._build_weights(dim_in, dim_out)
 
@@ -67,7 +68,7 @@ if True:
     from adaiw import BlockwiseAdaIN as AdaIN
 else:
     class AdaIN(nn.Module):
-        def __init__(self, style_dim, num_features, _):
+        def __init__(self, style_dim, num_features):
             super().__init__()
             self.norm = nn.InstanceNorm2d(num_features, affine=False)
             self.fc = nn.Linear(style_dim, num_features*2)
@@ -80,8 +81,12 @@ else:
 
 class AdainResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, style_dim=64, w_hpf=0,
-                 actv=nn.LeakyReLU(0.2), upsample=False, block_size=64):
+                 actv=nn.LeakyReLU(0.2), upsample=False, block_size=64, alpha_white=1.0, alpha_color=1.0):
         super().__init__()
+
+        self.alpha_white = alpha_white
+        self.alpha_color = alpha_color
+
         self.block_size = block_size
         self.w_hpf = w_hpf
         self.actv = actv
@@ -92,8 +97,8 @@ class AdainResBlk(nn.Module):
     def _build_weights(self, dim_in, dim_out, style_dim=64):
         self.conv1 = nn.Conv2d(dim_in, dim_out, 3, 1, 1)
         self.conv2 = nn.Conv2d(dim_out, dim_out, 3, 1, 1)
-        self.norm1 = AdaIN(style_dim, dim_in, block_size=self.block_size)
-        self.norm2 = AdaIN(style_dim, dim_out, block_size=self.block_size)
+        self.norm1 = AdaIN(style_dim, dim_in, block_size=self.block_size, alpha_white=self.alpha_white, alpha_color=self.alpha_color)
+        self.norm2 = AdaIN(style_dim, dim_out, block_size=self.block_size, alpha_white=self.alpha_white, alpha_color=self.alpha_color)
         print(self.norm1)
         if self.learned_sc:
             self.conv1x1 = nn.Conv2d(dim_in, dim_out, 1, 1, 0, bias=False)
@@ -136,7 +141,7 @@ class HighPass(nn.Module):
 
 
 class Generator(nn.Module):
-    def __init__(self, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1, block_size=64):
+    def __init__(self, args, img_size=256, style_dim=64, max_conv_dim=512, w_hpf=1, block_size=64):
         super().__init__()
         print('block_size: ', block_size)
         dim_in = 2**14 // img_size
@@ -159,7 +164,7 @@ class Generator(nn.Module):
                 ResBlk(dim_in, dim_out, normalize=True, downsample=True))
             self.decode.insert(
                 0, AdainResBlk(dim_out, dim_in, style_dim,
-                               w_hpf=w_hpf, upsample=True, block_size=block_size))  # stack-like
+                            w_hpf=w_hpf, upsample=True, block_size=block_size, alpha_white=args.alpha_white, alpha_color=args.alpha_color))  # stack-like
             dim_in = dim_out
 
         # bottleneck blocks
@@ -167,7 +172,7 @@ class Generator(nn.Module):
             self.encode.append(
                 ResBlk(dim_out, dim_out, normalize=True))
             self.decode.insert(
-                0, AdainResBlk(dim_out, dim_out, style_dim, w_hpf=w_hpf, block_size=block_size))
+                0, AdainResBlk(dim_out, dim_out, style_dim, w_hpf=w_hpf, block_size=block_size, alpha_white=args.alpha_white, alpha_color=args.alpha_color))
 
         if w_hpf > 0:
             device = torch.device(
@@ -284,7 +289,7 @@ class Discriminator(nn.Module):
 
 
 def build_model(args):
-    generator = Generator(args.img_size, args.style_dim, w_hpf=args.w_hpf, block_size=args.block_size)
+    generator = Generator(args, args.img_size, args.style_dim, w_hpf=args.w_hpf, block_size=args.block_size)
     mapping_network = MappingNetwork(args.latent_dim, args.style_dim, args.num_domains)
     style_encoder = StyleEncoder(args.img_size, args.style_dim, args.num_domains)
     discriminator = Discriminator(args.img_size, args.num_domains)

@@ -183,5 +183,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--block_size', type=int, default=64)
 
+    parser.add_argument('--print_learned', type=int, default=1000)
+    parser.add_argument('--alpha_white', type=float, default=1.0)
+    parser.add_argument('--alpha_color', type=float, default=1.0)
+    parser.add_argument('--alpha_path', type=str, default='expr/')
     args = parser.parse_args()
     main(args)
