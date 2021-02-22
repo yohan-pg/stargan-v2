@@ -104,7 +104,7 @@ parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
 
 # Vanilla
-parser.add_argument('--method', type=bool, default='whitening', choices=['whitening', 'std', 'baseline'])
+parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline'])
 parser.add_argument('--use_mlp', type=bool, default=True)
 parser.add_argument('--learn_alpha', type=bool, default=False)
 parser.add_argument('--use_denman_beavers', type=bool, default=False)
