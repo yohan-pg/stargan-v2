@@ -22,12 +22,11 @@ from core.wing import FAN
 
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
-                 normalize=False, downsample=False, upsample=False):
+                 normalize=False, downsample=False):
         super().__init__()
         self.actv = actv
         self.normalize = normalize
         self.downsample = downsample
-        self.upsample = upsample
         self.learned_sc = dim_in != dim_out
         self._build_weights(dim_in, dim_out)
 
