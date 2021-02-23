@@ -2,6 +2,15 @@ import argparse
 
 parser = argparse.ArgumentParser()
 
+def parse_bool(x):
+    assert isinstance(x, str)
+    if x == "True":
+        return True
+    elif x == "False":
+        return False
+    else: 
+        assert False, "Arg must be 'True' or 'False'"
+
 # model arguments
 parser.add_argument('--img_size', type=int, default=256,
                     help='Image resolution')
@@ -91,6 +100,9 @@ parser.add_argument('--out_dir', type=str, default='assets/representative/celeba
 parser.add_argument('--wing_path', type=str, default='expr/checkpoints/wing.ckpt')
 parser.add_argument('--lm_path', type=str, default='expr/checkpoints/celeba_lm_mean.npz')
 
+
+parser.add_argument('--use_checkpointing', type=parse_bool, default=False)
+
 # step size
 parser.add_argument('--print_every', type=int, default=100)
 parser.add_argument('--sample_every', type=int, default=5000)
@@ -103,15 +115,6 @@ parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
 
-
-def parse_bool(x):
-    assert isinstance(x, str)
-    if x == "True":
-        return True
-    elif x == "False":
-        return False
-    else: 
-        assert False, "Arg must be 'True' or 'False'"
 
 # Vanilla
 parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline'])
