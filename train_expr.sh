@@ -2,6 +2,8 @@
 
 echo "🚀 $EXPR"
 
+nvidia-smi
+
 echo "👉 Activating environment"
 cd $SCRATCH/stargan-v2
 source load_slurm_modules.sh
@@ -25,7 +27,7 @@ python main.py --mode train --num_domains 3 --w_hpf 0 \
                --lambda_reg 1 --lambda_sty 1 --lambda_ds 2 --lambda_cyc 1 \
                --train_img_dir data/afhq/train \
                --val_img_dir data/afhq/val \
-               --img_size 64 \
+               --img_size 256 \
                --checkpoint_dir expr/"$EXPR"/checkpoints/afhq \
                --result_dir expr/"$EXPR"/results/afhq \
                --sample_dir expr/"$EXPR"/samples/afhq \
