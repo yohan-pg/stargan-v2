@@ -5,9 +5,9 @@
 #SBATCH --cpus-per-task=8          # CPU cores/threads
 #SBATCH --mem=32000M            # memory per node
 #SBATCH --time=4-00:00           # time (DD-HH:MM)
-#SBATCH --array=0-7 #included
+#SBATCH --array=0-8 #included
 
-OPTIONS=(1 2 4 8 16 32 64 128)
+OPTIONS=(1 2 4 8 16 32 64 128 256)
 CHOICE="${OPTIONS[$SLURM_ARRAY_TASK_ID]}"
 
 export EXPR="block_size_$CHOICE"

@@ -170,12 +170,14 @@ class Solver(nn.Module):
                 calculate_metrics(nets_ema, args, i+1, mode='latent')
                 calculate_metrics(nets_ema, args, i+1, mode='reference')
 
+            import adaiw 
             if (i+1) % args.print_learned == 0:
                 alphas_list = []
                 for module in self.nets.generator.decode:
-                    alphas_list.append([('norm_1_white', module.norm1.alpha_white, 'norm_1_color', module.norm1.alpha_color),
-                                        ('norm_2_white', module.norm2.alpha_white, 'norm_2_color', module.norm2.alpha_color)])
-                
+                    if isinstance(module.norm1, adaiw.AdaIN):
+                        alphas_list.append([('norm_1_white', module.norm1.alpha_white_param, 'norm_1_color', module.norm1.alpha_color_param),
+                                            ('norm_2_white', module.norm2.alpha_white_param, 'norm_2_color', module.norm2.alpha_color_param)])
+            
                 txt_f = os.path.join(args.notes_path, "alphas.txt")
                 with open(txt_f, "a+") as f:
                     f.write("{} iterations: \n".format(i+1))
@@ -192,7 +194,7 @@ class Solver(nn.Module):
                             module.std_b4_join.item(),
                             module.std_b4_output.item()
                         ], file=f)
-
+    
     @torch.no_grad()
     def sample(self, loaders):
         args = self.args
