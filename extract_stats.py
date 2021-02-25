@@ -21,8 +21,7 @@ def step(f):
     else:
         f()
 
-# This is to fix the number ordering as otherwise 128 goes before 64
-exprs = sorted(os.listdir("expr"), key=lambda s: sum([10**i*ord(c) for i, c in enumerate(reversed(s))]))
+exprs = sorted(os.listdir("expr"))
 
 @step
 def extract_results():
@@ -30,12 +29,15 @@ def extract_results():
     results = {}
 
     for expr in exprs:
-        print(expr)
-        results[expr] = {}
         path = f"expr/{expr}/eval/{DATASET}"
-        for result in os.listdir(path):
-            if result.endswith(".json"):
-                results[expr][result] = json.loads(open(path + "/" + result, "r").read())
+        if os.path.exists(path):
+            print(expr)
+            results[expr] = {}
+            for result in os.listdir(path):
+                if result.endswith(".json"):
+                    results[expr][result] = json.loads(open(path + "/" + result, "r").read())
+        else:
+            print("👎", "skipping:", path)
         
     shelf['results'] = results
 
@@ -46,12 +48,14 @@ def make_frames():
 
     frames = {}
     measurements = set.union(*[set(expr.keys()) for expr in results.values()])
+    exprs_left = [expr for expr in exprs if expr in results]
     for measurement in measurements:
         print(measurement)
         frames[measurement] = pd.DataFrame([
             { k.split("/")[-1]:v for k, v in results[expr][measurement].items() } 
-                for expr in exprs
-        ], exprs)
+                for expr in exprs_left
+                if expr in results
+        ], exprs_left)
     
     shelf['frames'] = frames
 
