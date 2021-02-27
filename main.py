@@ -35,11 +35,12 @@ def subdirs(dname):
 def main(args):
     print(args)
     cudnn.benchmark = True
-    torch.manual_seed(args.seed)
 
+    torch.manual_seed(args.init_seed)
     solver = Solver(args)
 
     if args.mode == 'train':
+        torch.manual_seed(args.train_seed)
         assert len(subdirs(args.train_img_dir)) == args.num_domains
         assert len(subdirs(args.val_img_dir)) == args.num_domains
         loaders = Munch(src=get_train_loader(root=args.train_img_dir,

@@ -67,7 +67,12 @@ parser.add_argument('--mode', type=str, required=True,
                     help='This argument is used in solver')
 parser.add_argument('--num_workers', type=int, default=4,
                     help='Number of workers used in DataLoader')
-parser.add_argument('--seed', type=int, default=777,
+
+parser.add_argument('--init_seed', type=int, default=777,
+                    help='Seed for random number generator')
+parser.add_argument('--train_seed', type=int, default=777,
+                    help='Seed for random number generator')
+parser.add_argument('--eval_seed', type=int, default=777,
                     help='Seed for random number generator')
 
 # directory for training
