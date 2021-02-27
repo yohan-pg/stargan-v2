@@ -119,6 +119,31 @@ def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
 
 
 @torch.no_grad()
+def nicer_translate_using_reference(nets, args, x_src, y_src, x_ref, y_ref, filename):
+    def find_nice_indices(y):
+        y = list(y)
+
+        idx = []
+
+        for target in [0, 1, 2]:
+            try:
+                idx.append(y.index(target))
+                idx.append(y.index(target, idx[-1] + 1))
+            except ValueError:
+                pass
+        
+        return idx
+
+    idx_src = find_nice_indices(y_src)
+    x_src, y_src = x_src[idx_src], y_src[idx_src]
+
+    idx_ref = find_nice_indices(y_ref)
+    x_ref, y_ref = x_ref[idx_ref], y_ref[idx_ref]
+
+    translate_using_reference(nets, args, x_src, x_ref, y_ref, filename)
+
+
+@torch.no_grad()
 def debug_image(nets, args, inputs, step):
     x_src, y_src = inputs.x_src, inputs.y_src
     x_ref, y_ref = inputs.x_ref, inputs.y_ref
@@ -141,6 +166,9 @@ def debug_image(nets, args, inputs, step):
     # reference-guided image synthesis
     filename = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
     translate_using_reference(nets, args, x_src, x_ref, y_ref, filename)
+    
+    filename_2 = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
+    nicer_translate_using_reference(nets, args, x_src, y_src, x_ref, y_ref, filename_2)
 
 
 # ======================= #
