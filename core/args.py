@@ -115,7 +115,7 @@ parser.add_argument('--eval_every', type=int, default=50000)
 
 parser.add_argument('--print_learned', type=int, default=1000)
 parser.add_argument('--print_std', type=int, default=100)
-parser.add_argument('--print_sqrt_error', type=int, default=1)
+parser.add_argument('--print_sqrt_error', type=int, default=100)
 parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
