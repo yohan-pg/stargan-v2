@@ -112,12 +112,13 @@ elif ARGS.method == 'std':
 
 elif ARGS.method == 'whitening':
     import adaiw
+    
     class AdaIN(adaiw.BlockwiseAdaIN):
         def __init__(self, *args):
             super().__init__(
                 *args, 
                 projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
-                normalizer_type = adaiw.BlockwiseDBWhitening if ARGS.use_denman_beavers else adaiw.BlockwiseWhitening,
+                normalizer_type = getattr(adaiw, ARGS.normalizer_type),
                 learn_alpha = ARGS.learn_alpha,
                 shift_mean = ARGS.use_mean_shift,
                 make_color_symmetric = ARGS.make_color_symmetric,
@@ -129,6 +130,7 @@ elif ARGS.method == 'whitening':
             print("=================")
             print("Blockwise AdaIN")
             print(self)
+            self.normalizer.num_iters = ARGS.num_whitening_iters
             print(self.normalizer)
             print("=================")
 

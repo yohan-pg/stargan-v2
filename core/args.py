@@ -105,7 +105,6 @@ parser.add_argument('--out_dir', type=str, default='assets/representative/celeba
 parser.add_argument('--wing_path', type=str, default='expr/checkpoints/wing.ckpt')
 parser.add_argument('--lm_path', type=str, default='expr/checkpoints/celeba_lm_mean.npz')
 
-
 parser.add_argument('--use_checkpointing', type=parse_bool, default=False)
 
 # step size
@@ -116,6 +115,7 @@ parser.add_argument('--eval_every', type=int, default=50000)
 
 parser.add_argument('--print_learned', type=int, default=1000)
 parser.add_argument('--print_std', type=int, default=100)
+parser.add_argument('--print_sqrt_error', type=int, default=1)
 parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
@@ -125,7 +125,8 @@ parser.add_argument('--notes_path', type=str, default='expr/')
 parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline'])
 parser.add_argument('--use_mlp', type=parse_bool, default=True)
 parser.add_argument('--learn_alpha', type=parse_bool, default=False)
-parser.add_argument('--use_denman_beavers', type=parse_bool, default=False)
+parser.add_argument('--normalizer_type', type=str, default='BlockwiseWhitening')
+parser.add_argument('--num_whitening_iters', type=int, default=20)
 parser.add_argument('--use_mean_shift', type=parse_bool, default=False)
 parser.add_argument('--make_color_symmetric', type=parse_bool, default=True)
 parser.add_argument('--center_color_at_identity', type=parse_bool, default=False)

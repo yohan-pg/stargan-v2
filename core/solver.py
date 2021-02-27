@@ -194,6 +194,18 @@ class Solver(nn.Module):
                             module.std_b4_join.item(),
                             module.std_b4_output.item()
                         ], file=f)
+
+            if (i+1) % args.print_sqrt_error == 0:
+                with open(os.path.join(args.notes_path, "sqrt_errors.txt"), "a+") as f:
+                    f.write("{} iterations: \n".format(i+1))
+                    all_errors = []
+                    for j, module in enumerate(self.nets.generator.decode):
+                        errors = []
+                        for norm in [module.norm1, module.norm2]:
+                            if isinstance(norm, adaiw.AdaIN) and isinstance(norm.normalizer, adaiw.normalizer.Whitening):
+                                errors.append(norm.normalizer.last_error)
+                        all_errors.append(tuple(errors))
+                    print(all_errors, file=f)
     
     @torch.no_grad()
     def sample(self, loaders):
