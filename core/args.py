@@ -132,6 +132,7 @@ parser.add_argument('--use_mean_shift', type=parse_bool, default=False)
 parser.add_argument('--make_color_symmetric', type=parse_bool, default=True)
 parser.add_argument('--center_color_at_identity', type=parse_bool, default=False)
 parser.add_argument('--block_size', type=int, default=64)
+parser.add_argument('--num_blocks', type=int, default=-1)
 
 import sys 
 ARGS = parser.parse_args()

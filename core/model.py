@@ -116,9 +116,17 @@ elif ARGS.method == 'whitening':
     import adaiw
     
     class AdaIN(adaiw.BlockwiseAdaIN):
-        def __init__(self, *args):
+        def __init__(self, style_size, num_features):
+            if ARGS.num_blocks != -1:
+                assert (num_features / ARGS.num_blocks).is_integer()
+                block_size = min(num_features // ARGS.num_blocks, num_features)
+                print("NUM FEATURES", num_features)
+                print("NUM BLOCKS", ARGS.num_blocks, "FINAL BLOCK SIZE", block_size)
+            else:
+                block_size = ARGS.block_size
             super().__init__(
-                *args, 
+                style_size,
+                num_features,
                 projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
                 normalizer_type = getattr(adaiw, ARGS.normalizer_type),
                 learn_alpha_white = ARGS.learn_alpha_white,
@@ -126,7 +134,7 @@ elif ARGS.method == 'whitening':
                 shift_mean = ARGS.use_mean_shift,
                 make_color_symmetric = ARGS.make_color_symmetric,
                 center_color_at_identity = ARGS.center_color_at_identity,
-                block_size = ARGS.block_size,
+                block_size = block_size,
                 alpha_white = ARGS.alpha_white, 
                 alpha_color = ARGS.alpha_color
             )
