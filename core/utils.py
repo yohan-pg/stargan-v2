@@ -167,7 +167,7 @@ def debug_image(nets, args, inputs, step):
     filename = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
     translate_using_reference(nets, args, x_src, x_ref, y_ref, filename)
     
-    filename_2 = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
+    filename_2 = ospj(args.sample_dir, '%06d_nicer_reference.jpg' % (step))
     nicer_translate_using_reference(nets, args, x_src, y_src, x_ref, y_ref, filename_2)
 
 
