@@ -69,7 +69,8 @@ from core.args import ARGS, parser
 if ARGS.method == 'baseline':
     assert ARGS.use_mlp == parser.get_default('use_mlp')
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
-    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
+    assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
+    assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
     assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
@@ -95,7 +96,8 @@ elif ARGS.method == 'std':
     import adaiw
     assert ARGS.use_mlp == parser.get_default('use_mlp')
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
-    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
+    assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
+    assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
     assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
@@ -119,7 +121,8 @@ elif ARGS.method == 'whitening':
                 *args, 
                 projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
                 normalizer_type = getattr(adaiw, ARGS.normalizer_type),
-                learn_alpha = ARGS.learn_alpha,
+                learn_alpha_white = ARGS.learn_alpha_white,
+                learn_alpha_color = ARGS.learn_alpha_color,
                 shift_mean = ARGS.use_mean_shift,
                 make_color_symmetric = ARGS.make_color_symmetric,
                 center_color_at_identity = ARGS.center_color_at_identity,
