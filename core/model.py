@@ -19,6 +19,11 @@ import torch.nn.functional as F
 
 from core.wing import FAN
 
+def checkpoint_method(f):
+    def checkpointed_f(self, *args):
+        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
+    return checkpointed_f
+
 
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
@@ -190,6 +195,7 @@ class AdainResBlk(nn.Module):
         self.std_b4_join = x.std()
         return x
 
+    @checkpoint_method
     def forward(self, x, s):
         out = self._residual(x, s)
         if self.w_hpf == 0:
