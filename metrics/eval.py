@@ -59,30 +59,34 @@ def calculate_metrics(nets, args, step, mode):
             shutil.rmtree(path_fake, ignore_errors=True)
             os.makedirs(path_fake)
 
-            lpips_values = []
+            def sample_style(N):
+                y_trg = torch.tensor([trg_idx] * N).to(device)
+                if mode == 'latent':
+                    z_trg = torch.randn(N, args.latent_dim).to(device)
+                    s_trg = nets.mapping_network(z_trg, y_trg)
+                else:
+                    try:
+                        x_ref = next(iter_ref).to(device)
+                    except:
+                        iter_ref = iter(loader_ref)
+                        x_ref = next(iter_ref).to(device)
+
+                    if x_ref.size(0) > N:
+                        x_ref = x_ref[:N]
+                    s_trg = nets.style_encoder(x_ref, y_trg)
+                return s_trg
+         
             print('Generating images and calculating LPIPS for %s...' % task)
-            for i, x_src in enumerate(tqdm(loader_src, total=len(loader_src))):
+            lpips_values = []
+            for i, x_src in enumerate(tqdm(loader_src, total=len(loader_src))):                
                 N = x_src.size(0)
                 x_src = x_src.to(device)
-                y_trg = torch.tensor([trg_idx] * N).to(device)
                 masks = nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
 
                 # generate 10 outputs from the same input
                 group_of_images = []
                 for j in range(args.num_outs_per_domain):
-                    if mode == 'latent':
-                        z_trg = torch.randn(N, args.latent_dim).to(device)
-                        s_trg = nets.mapping_network(z_trg, y_trg)
-                    else:
-                        try:
-                            x_ref = next(iter_ref).to(device)
-                        except:
-                            iter_ref = iter(loader_ref)
-                            x_ref = next(iter_ref).to(device)
-
-                        if x_ref.size(0) > N:
-                            x_ref = x_ref[:N]
-                        s_trg = nets.style_encoder(x_ref, y_trg)
+                    s_trg = sample_style(N)
 
                     x_fake = nets.generator(x_src, s_trg, masks=masks)
                     group_of_images.append(x_fake)
@@ -96,10 +100,32 @@ def calculate_metrics(nets, args, step, mode):
 
                 lpips_value = calculate_lpips_given_images(group_of_images)
                 lpips_values.append(lpips_value)
-
+                
             # calculate LPIPS for each task (e.g. cat2dog, dog2cat)
             lpips_mean = np.array(lpips_values).mean()
             lpips_dict['LPIPS_%s/%s' % (mode, task)] = lpips_mean
+
+            lpips_t_values = []
+            print('Generating images and calculating LPIPS^t for %s...' % task)
+            for i in range(len(loader_src)):
+                iter_src = iter(loader_src)
+                s_trg = sample_style(args.val_batch_size)
+
+                # generate 10 outputs from the same input
+                group_of_images = []
+                for j in range(args.num_outs_per_domain):
+                    x_src = next(iter_src).to(device)
+
+                    x_src = x_src.to(device)
+                    masks = nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
+                    
+                    x_fake = nets.generator(x_src, s_trg, masks=masks)
+                    group_of_images.append(x_fake)
+
+                lpips_t_value = calculate_lpips_given_images(group_of_images)
+                lpips_t_values.append(lpips_t_value)
+            lpips_t_mean = np.array(lpips_t_values).mean()
+            lpips_dict['LPIPS^t_%s/%s' % (mode, task)] = lpips_t_mean
 
         # delete dataloaders
         del loader_src
