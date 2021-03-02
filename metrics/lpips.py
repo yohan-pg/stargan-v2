@@ -69,7 +69,7 @@ class LPIPS(nn.Module):
             if name in own_state_dict:
                 own_state_dict[name].copy_(param)
 
-    def forward(self, x, y):
+    def forward(self, x, y, gram=False):
         x = (x - self.mu) / self.sigma
         y = (y - self.mu) / self.sigma
         x_fmaps = self.alexnet(x)
@@ -78,7 +78,14 @@ class LPIPS(nn.Module):
         for x_fmap, y_fmap, conv1x1 in zip(x_fmaps, y_fmaps, self.lpips_weights):
             x_fmap = normalize(x_fmap)
             y_fmap = normalize(y_fmap)
-            lpips_value += torch.mean(conv1x1((x_fmap - y_fmap)**2))
+            if gram:
+                x_fmap = x_fmap.reshape(*x_fmap.shape[:2], -1)
+                y_fmap = y_fmap.reshape(*y_fmap.shape[:2], -1)
+                x_gram = x_fmap.bmm(x_fmap.transpose(1, 2))
+                y_gram = y_fmap.bmm(y_fmap.transpose(1, 2))
+                lpips_value += torch.mean(((x_gram - y_gram)**2))
+            else:
+                lpips_value += torch.mean(conv1x1((x_fmap - y_fmap)**2))
         return lpips_value
 
 
@@ -86,7 +93,7 @@ class LPIPS(nn.Module):
 def calculate_lpips_given_images(group_of_images):
     # group_of_images = [torch.randn(N, C, H, W) for _ in range(10)]
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    lpips = LPIPS().eval().to(device)
+    lpips = LPIPS().eval().to(device) 
     lpips_values = []
     num_rand_outputs = len(group_of_images)
 
