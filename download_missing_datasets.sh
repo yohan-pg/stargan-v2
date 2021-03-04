@@ -14,3 +14,8 @@ else
     echo "  👍 CELEBA already downloaded."
 fi
 
+if [ ! -d "expr/checkpoints/wing.ckpt" ]; then 
+    bash download.sh wing
+else
+    echo "  👍 WING already downloaded."
+fi

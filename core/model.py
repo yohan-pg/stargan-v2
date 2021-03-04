@@ -198,8 +198,8 @@ class AdainResBlk(nn.Module):
     @checkpoint_method
     def forward(self, x, s):
         out = self._residual(x, s)
-        if self.w_hpf == 0:
-            out = (out + self._shortcut(x)) / math.sqrt(2)
+        # if self.w_hpf == 0:
+        out = (out + self._shortcut(x)) / math.sqrt(2)
         self.std_b4_output = out.std()
         return out
 
