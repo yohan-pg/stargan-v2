@@ -116,10 +116,10 @@ parser.add_argument('--eval_every', type=int, default=10000)
 parser.add_argument('--print_learned', type=int, default=1000)
 parser.add_argument('--print_std', type=int, default=100)
 parser.add_argument('--print_sqrt_error', type=int, default=100)
+parser.add_argument('--print_color', type=int, default=500)
 parser.add_argument('--alpha_white', type=float, default=1.0)
 parser.add_argument('--alpha_color', type=float, default=1.0)
 parser.add_argument('--notes_path', type=str, default='expr/')
-
 
 # Vanilla
 parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline', 'ortho'])
