@@ -45,6 +45,14 @@ class Conv1x1(nn.Module):
     def forward(self, x):
         return self.main(x)
 
+    def sqrt(self):
+        import copy
+
+        clone = copy.deepcopy(self)
+        clone.main[-1].weight.copy_(clone.main[-1].weight.sqrt())
+        
+        return clone
+
 
 class LPIPS(nn.Module):
     def __init__(self):
@@ -79,10 +87,13 @@ class LPIPS(nn.Module):
             x_fmap = normalize(x_fmap)
             y_fmap = normalize(y_fmap)
             if gram:
-                x_fmap = x_fmap.reshape(*x_fmap.shape[:2], -1)
-                y_fmap = y_fmap.reshape(*y_fmap.shape[:2], -1)
+                sqrt_conv1x1 = conv1x1.sqrt()
+                x_fmap = x_fmap.reshape(*sqrt_conv1x1(x_fmap).shape[:2], -1)
+                y_fmap = y_fmap.reshape(*sqrt_conv1x1(y_fmap).shape[:2], -1)
+                
                 x_gram = x_fmap.bmm(x_fmap.transpose(1, 2))
                 y_gram = y_fmap.bmm(y_fmap.transpose(1, 2))
+
                 lpips_value += torch.mean(((x_gram - y_gram)**2))
             else:
                 lpips_value += torch.mean(conv1x1((x_fmap - y_fmap)**2))
