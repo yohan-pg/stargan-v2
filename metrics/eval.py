@@ -47,7 +47,7 @@ def calculate_metrics(nets, args, step, mode):
                                          imagenet_normalize=False,
                                          drop_last=True)
 
-        for src_idx, src_domain in enumerate(src_domains):
+        for _, src_domain in enumerate(src_domains):
             path_src = os.path.join(args.val_img_dir, src_domain)
             loader_src = get_eval_loader(root=path_src,
                                          img_size=args.img_size,
@@ -106,15 +106,18 @@ def calculate_metrics(nets, args, step, mode):
             for i in range(len(loader_src)):
                 iter_src = iter(loader_src)
                 
+                N = args.val_batch_size
+                y_trg = torch.tensor([trg_idx] * N).to(device)
+
                 if mode == 'latent':
                     z_trg = torch.randn(N, args.latent_dim).to(device)
                     s_trg = nets.mapping_network(z_trg, y_trg)
                 else:
                     try:
-                        x_ref = next(iter_ref).to(device)
+                        x_ref = next(iter_ref2).to(device)
                     except:
-                        iter_ref = iter(loader_ref)
-                        x_ref = next(iter_ref).to(device)
+                        iter_ref2 = iter(loader_ref)
+                        x_ref = next(iter_ref2).to(device)
 
                     if x_ref.size(0) > N:
                         x_ref = x_ref[:N]
