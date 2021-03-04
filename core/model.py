@@ -19,6 +19,11 @@ import torch.nn.functional as F
 
 from core.wing import FAN
 
+def checkpoint_method(f):
+    def checkpointed_f(self, *args):
+        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
+    return checkpointed_f
+
 
 def checkpoint_method(f):
     def checkpointed_f(self, *args):
@@ -209,8 +214,8 @@ class AdainResBlk(nn.Module):
     @checkpoint_method
     def forward(self, x, s):
         out = self._residual(x, s)
-        if self.w_hpf == 0:
-            out = (out + self._shortcut(x)) / math.sqrt(2)
+        # if self.w_hpf == 0:
+        out = (out + self._shortcut(x)) / math.sqrt(2)
         self.std_b4_output = out.std()
         return out
 

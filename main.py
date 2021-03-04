@@ -16,7 +16,7 @@ import argparse
 from munch import Munch
 from torch.backends import cudnn
 import torch
-
+import datetime
 
 from core.data_loader import get_train_loader
 from core.data_loader import get_test_loader
@@ -40,6 +40,7 @@ def main(args):
     solver = Solver(args)
 
     if args.mode == 'train':
+        print(datetime.datetime.now())
         torch.manual_seed(args.train_seed)
         assert len(subdirs(args.train_img_dir)) == args.num_domains
         assert len(subdirs(args.val_img_dir)) == args.num_domains
@@ -61,6 +62,7 @@ def main(args):
                                             shuffle=True,
                                             num_workers=args.num_workers))
         solver.train(loaders)
+        print(datetime.datetime.now())
     elif args.mode == 'sample':
         assert len(subdirs(args.src_dir)) == args.num_domains
         assert len(subdirs(args.ref_dir)) == args.num_domains
