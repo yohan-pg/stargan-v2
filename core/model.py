@@ -148,6 +148,7 @@ elif ARGS.method == 'whitening':
                 learn_alpha_color = ARGS.learn_alpha_color,
                 shift_mean = ARGS.use_mean_shift,
                 make_color_symmetric = ARGS.make_color_symmetric,
+                make_positive_definite = ARGS.make_positive_definite,
                 center_color_at_identity = ARGS.center_color_at_identity,
                 block_size = block_size,
                 alpha_white = ARGS.alpha_white, 
