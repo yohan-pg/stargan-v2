@@ -24,12 +24,6 @@ def checkpoint_method(f):
         return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
     return checkpointed_f
 
-
-def checkpoint_method(f):
-    def checkpointed_f(self, *args):
-        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
-    return checkpointed_f
-
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
                  normalize=False, downsample=False):
