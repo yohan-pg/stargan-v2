@@ -206,6 +206,19 @@ class Solver(nn.Module):
                                 errors.append(norm.normalizer.last_error)
                         all_errors.append(tuple(errors))
                     print(all_errors, file=f)
+            
+            if (i + 1) % args.print_color == 0:
+                with torch.no_grad():
+                    with open(os.path.join(args.notes_path, "last_color.txt"), "a+") as f:
+                        f.write("{} iterations: \n".format(i+1))
+                        for _, module in enumerate(self.nets.generator.decode):
+                            diag1, tri1 = module.norm1.last_injected_stat.diagonal(), module.norm1.last_injected_stat.tril(-1)
+                            print("Mean Diag:", diag1[0].mean().item(), "Std Diag:", diag1[0].std().item(), file=f)
+                            print("Mean Tril:", tri1[0].mean().item(), "Std Tril:", tri1[0].std().item(), file=f)
+                            diag2, tri2 = module.norm2.last_injected_stat.diagonal(), module.norm2.last_injected_stat.tril(-1)
+                            print("Mean Diag:", diag2[0].mean().item(), "Std Tril:", diag2[0].std().item(), file=f)
+                            print("Mean Diag:", tri2[0].mean().item(), "Std Tril:", tri2[0].std().item(), file=f)
+                            print(file=f)
     
     @torch.no_grad()
     def sample(self, loaders):

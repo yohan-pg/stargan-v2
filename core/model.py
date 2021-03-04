@@ -19,6 +19,16 @@ import torch.nn.functional as F
 
 from core.wing import FAN
 
+def checkpoint_method(f):
+    def checkpointed_f(self, *args):
+        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
+    return checkpointed_f
+
+
+def checkpoint_method(f):
+    def checkpointed_f(self, *args):
+        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
+    return checkpointed_f
 
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
@@ -69,7 +79,8 @@ from core.args import ARGS, parser
 if ARGS.method == 'baseline':
     assert ARGS.use_mlp == parser.get_default('use_mlp')
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
-    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
+    assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
+    assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
     assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
@@ -91,11 +102,22 @@ if ARGS.method == 'baseline':
             gamma, beta = torch.chunk(h, chunks=2, dim=1)
 
             return (1 + gamma) * self.norm(x) + beta
+elif ARGS.method == 'ortho':
+    import adaiw
+    class AdaIN(adaiw.OrthogonalWhiteningAdaIN):
+        def __init__(self, *args):
+            super().__init__(*args)
+            print("=================")
+            print("Ortho")
+            print(self)
+            print(self.normalizer)
+            print("=================")
 elif ARGS.method == 'std':
     import adaiw
     assert ARGS.use_mlp == parser.get_default('use_mlp')
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
-    assert ARGS.learn_alpha == parser.get_default('learn_alpha')
+    assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
+    assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
     assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
@@ -114,16 +136,26 @@ elif ARGS.method == 'whitening':
     import adaiw
     
     class AdaIN(adaiw.BlockwiseAdaIN):
-        def __init__(self, *args):
+        def __init__(self, style_size, num_features):
+            if ARGS.num_blocks != -1:
+                assert (num_features / ARGS.num_blocks).is_integer()
+                block_size = min(num_features // ARGS.num_blocks, num_features)
+                print("NUM FEATURES", num_features)
+                print("NUM BLOCKS", ARGS.num_blocks, "FINAL BLOCK SIZE", block_size)
+            else:
+                block_size = ARGS.block_size
             super().__init__(
-                *args, 
+                style_size,
+                num_features,
                 projection_type = adaiw.MLPProjection if ARGS.use_mlp else adaiw.AffineProjection,
                 normalizer_type = getattr(adaiw, ARGS.normalizer_type),
-                learn_alpha = ARGS.learn_alpha,
+                learn_alpha_white = ARGS.learn_alpha_white,
+                learn_alpha_color = ARGS.learn_alpha_color,
                 shift_mean = ARGS.use_mean_shift,
                 make_color_symmetric = ARGS.make_color_symmetric,
+                make_positive_definite = ARGS.make_positive_definite,
                 center_color_at_identity = ARGS.center_color_at_identity,
-                block_size = ARGS.block_size,
+                block_size = block_size,
                 alpha_white = ARGS.alpha_white, 
                 alpha_color = ARGS.alpha_color
             )
@@ -179,10 +211,11 @@ class AdainResBlk(nn.Module):
         self.std_b4_join = x.std()
         return x
 
+    @checkpoint_method
     def forward(self, x, s):
         out = self._residual(x, s)
-        if self.w_hpf == 0:
-            out = (out + self._shortcut(x)) / math.sqrt(2)
+        # if self.w_hpf == 0:
+        out = (out + self._shortcut(x)) / math.sqrt(2)
         self.std_b4_output = out.std()
         return out
 
@@ -236,7 +269,8 @@ class Generator(nn.Module):
             device = torch.device(
                 'cuda' if torch.cuda.is_available() else 'cpu')
             self.hpf = HighPass(w_hpf, device)
-
+    
+    
     def forward(self, x, s, masks=None):
         x = self.from_rgb(x)
         cache = {}

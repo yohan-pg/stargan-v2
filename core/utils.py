@@ -98,6 +98,8 @@ def translate_using_latent(nets, args, x_src, y_trg_list, z_trg_list, psi, filen
     save_image(x_concat, N, filename)
 
 
+from metrics.lpips import LPIPS
+
 @torch.no_grad()
 def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
     N, C, H, W = x_src.size()
@@ -113,8 +115,39 @@ def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
         x_fake_with_ref = torch.cat([x_ref[i:i+1], x_fake], dim=0)
         x_concat += [x_fake_with_ref]
 
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    lpips = LPIPS().eval().to(device) 
+
+    percep_dists = []
+    style_dists = []
+
+    with torch.no_grad():
+        for i, row in enumerate(x_concat[1:]):
+            ps = []
+            ss = []
+            
+            for j, img in enumerate(row[1:]):
+                ps.append((lpips(x_src[i], img).item(), lpips(x_ref[j], img).item()))
+                ss.append((lpips(x_src[i], img, gram=True).item(), lpips(x_ref[j], img, gram=True).item()))
+            
+            percep_dists.append(ps)
+            style_dists.append(ss)  
+    
     x_concat = torch.cat(x_concat, dim=0)
     save_image(x_concat, N+1, filename)
+    
+    with open(filename.split(".")[0] + ".percep_dist.txt", "w+") as f:
+        f.write(str(percep_dists))
+
+    with open(filename.split(".")[0] + ".style_dist.txt", "w+") as f:
+        f.write(str(style_dists))
+
+    with open(filename.split(".")[0] + ".means.txt", "w+") as f:
+        f.write("P src:" + str(torch.mean(torch.tensor(percep_dists)[:, :, 0]).item()) + "\n")
+        f.write("P ref:" + str(torch.mean(torch.tensor(percep_dists)[:, :, 1]).item()) + "\n")
+        f.write("S src:" + str(torch.mean(torch.tensor(style_dists)[:, :, 0]).item()) + "\n")
+        f.write("S ref:" + str(torch.mean(torch.tensor(style_dists)[:, :, 1]).item()) + "\n")
+
     del x_concat
 
 
@@ -167,7 +200,7 @@ def debug_image(nets, args, inputs, step):
     filename = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
     translate_using_reference(nets, args, x_src, x_ref, y_ref, filename)
     
-    filename_2 = ospj(args.sample_dir, '%06d_reference.jpg' % (step))
+    filename_2 = ospj(args.sample_dir, '%06d_nicer_reference.jpg' % (step))
     nicer_translate_using_reference(nets, args, x_src, y_src, x_ref, y_ref, filename_2)
 
 
