@@ -109,9 +109,9 @@ parser.add_argument('--use_checkpointing', type=parse_bool, default=False)
 
 # step size
 parser.add_argument('--print_every', type=int, default=100)
-parser.add_argument('--sample_every', type=int, default=5000)
+parser.add_argument('--sample_every', type=int, default=1000)
 parser.add_argument('--save_every', type=int, default=50000)
-parser.add_argument('--eval_every', type=int, default=50000)
+parser.add_argument('--eval_every', type=int, default=10000)
 
 parser.add_argument('--print_learned', type=int, default=1000)
 parser.add_argument('--print_std', type=int, default=100)
@@ -122,7 +122,7 @@ parser.add_argument('--notes_path', type=str, default='expr/')
 
 
 # Vanilla
-parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline'])
+parser.add_argument('--method', type=str, default='whitening', choices=['whitening', 'std', 'baseline', 'ortho'])
 parser.add_argument('--use_mlp', type=parse_bool, default=True)
 parser.add_argument('--learn_alpha_white', type=parse_bool, default=False)
 parser.add_argument('--learn_alpha_color', type=parse_bool, default=False)

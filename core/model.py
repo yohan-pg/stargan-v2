@@ -20,6 +20,11 @@ import torch.nn.functional as F
 from core.wing import FAN
 
 
+def checkpoint_method(f):
+    def checkpointed_f(self, *args):
+        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
+    return checkpointed_f
+
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
                  normalize=False, downsample=False):
@@ -92,6 +97,16 @@ if ARGS.method == 'baseline':
             gamma, beta = torch.chunk(h, chunks=2, dim=1)
 
             return (1 + gamma) * self.norm(x) + beta
+elif ARGS.method == 'ortho':
+    import adaiw
+    class AdaIN(adaiw.OrthogonalWhiteningAdaIN):
+        def __init__(self, *args):
+            super().__init__(*args)
+            print("=================")
+            print("Ortho")
+            print(self)
+            print(self.normalizer)
+            print("=================")
 elif ARGS.method == 'std':
     import adaiw
     assert ARGS.use_mlp == parser.get_default('use_mlp')
@@ -190,6 +205,7 @@ class AdainResBlk(nn.Module):
         self.std_b4_join = x.std()
         return x
 
+    @checkpoint_method
     def forward(self, x, s):
         out = self._residual(x, s)
         if self.w_hpf == 0:
@@ -247,7 +263,8 @@ class Generator(nn.Module):
             device = torch.device(
                 'cuda' if torch.cuda.is_available() else 'cpu')
             self.hpf = HighPass(w_hpf, device)
-
+    
+    
     def forward(self, x, s, masks=None):
         x = self.from_rgb(x)
         cache = {}
