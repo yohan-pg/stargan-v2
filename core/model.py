@@ -24,12 +24,6 @@ def checkpoint_method(f):
         return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
     return checkpointed_f
 
-
-def checkpoint_method(f):
-    def checkpointed_f(self, *args):
-        return torch.utils.checkpoint.checkpoint(f.__get__(self), *args)
-    return checkpointed_f
-
 class ResBlk(nn.Module):
     def __init__(self, dim_in, dim_out, actv=nn.LeakyReLU(0.2),
                  normalize=False, downsample=False):
@@ -81,7 +75,6 @@ if ARGS.method == 'baseline':
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
     assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
     assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
-    assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
     assert ARGS.block_size == parser.get_default('block_size')
@@ -118,7 +111,6 @@ elif ARGS.method == 'std':
     assert ARGS.use_mean_shift == parser.get_default('use_mean_shift')
     assert ARGS.learn_alpha_white == parser.get_default('learn_alpha_white')
     assert ARGS.learn_alpha_color == parser.get_default('learn_alpha_color')
-    assert ARGS.use_denman_beavers == parser.get_default('use_denman_beavers')
     assert ARGS.make_color_symmetric == parser.get_default('make_color_symmetric')
     assert ARGS.center_color_at_identity == parser.get_default('center_color_at_identity')
     assert ARGS.block_size == parser.get_default('block_size')
