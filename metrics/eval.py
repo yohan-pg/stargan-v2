@@ -136,6 +136,10 @@ def calculate_metrics(nets, args, step, mode):
 
                 lpips_t_value = calculate_lpips_given_images(group_of_images)
                 lpips_t_values.append(lpips_t_value)
+
+                del iter_src
+                if mode == 'reference':
+                    del iter_ref2
             lpips_t_mean = np.array(lpips_t_values).mean()
             lpips_dict['LPIPS^t_%s/%s' % (mode, task)] = lpips_t_mean
 

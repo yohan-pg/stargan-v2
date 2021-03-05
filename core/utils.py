@@ -127,8 +127,8 @@ def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
             ss = []
             
             for j, img in enumerate(row[1:]):
-                ps.append((lpips(x_src[i], img).item(), lpips(x_ref[j], img).item()))
-                ss.append((lpips(x_src[i], img, gram=True).item(), lpips(x_ref[j], img, gram=True).item()))
+                ps.append((lpips(x_src[j], img).item(), lpips(x_ref[i], img).item()))
+                ss.append((lpips(x_src[j], img, gram=True).item(), lpips(x_ref[i], img, gram=True).item()))
             
             percep_dists.append(ps)
             style_dists.append(ss)  
