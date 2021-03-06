@@ -20,7 +20,7 @@ parser.add_argument('--latent_dim', type=int, default=16,
                     help='Latent vector dimension')
 parser.add_argument('--hidden_dim', type=int, default=512,
                     help='Hidden dimension of mapping network')
-parser.add_argument('--style_dim', type=int, default=64,
+parser.add_argument('--style_dim', type=int, default=128,
                     help='Style code dimension')
 
 # weight for objective functions
