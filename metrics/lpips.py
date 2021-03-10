@@ -88,8 +88,8 @@ class LPIPS(nn.Module):
             y_fmap = normalize(y_fmap)
             if gram:
                 sqrt_conv1x1 = conv1x1.sqrt()
-                x_fmap = x_fmap.reshape(*sqrt_conv1x1(x_fmap).shape[:2], -1)
-                y_fmap = y_fmap.reshape(*sqrt_conv1x1(y_fmap).shape[:2], -1)
+                x_fmap = sqrt_conv1x1(x_fmap).reshape(*x_fmap.shape[:2], -1)
+                y_fmap = sqrt_conv1x1(y_fmap).reshape(*y_fmap.shape[:2], -1)
                 
                 x_gram = x_fmap.bmm(x_fmap.transpose(1, 2))
                 y_gram = y_fmap.bmm(y_fmap.transpose(1, 2))
